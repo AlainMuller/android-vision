@@ -29,7 +29,7 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
     private static final float EYE_RADIUS_PROPORTION = 0.45f;
     private static final float IRIS_RADIUS_PROPORTION = EYE_RADIUS_PROPORTION / 2.0f;
 
-    private Paint mEyeWhitesPaint;
+    private Paint mLeftOpenPaint, mRightOpenPaint;
     private Paint mEyeIrisPaint;
     private Paint mEyeOutlinePaint;
     private Paint mEyeLidPaint;
@@ -51,9 +51,13 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
     GooglyEyesGraphic(GraphicOverlay overlay) {
         super(overlay);
 
-        mEyeWhitesPaint = new Paint();
-        mEyeWhitesPaint.setColor(Color.WHITE);
-        mEyeWhitesPaint.setStyle(Paint.Style.FILL);
+        mLeftOpenPaint = new Paint();
+        mLeftOpenPaint.setColor(Color.RED);
+        mLeftOpenPaint.setStyle(Paint.Style.FILL);
+
+        mRightOpenPaint = new Paint();
+        mRightOpenPaint.setColor(Color.GREEN);
+        mRightOpenPaint.setStyle(Paint.Style.FILL);
 
         mEyeLidPaint = new Paint();
         mEyeLidPaint.setColor(Color.YELLOW);
@@ -105,28 +109,28 @@ class GooglyEyesGraphic extends GraphicOverlay.Graphic {
         // Use the inter-eye distance to set the size of the eyes.
         float distance = (float) Math.sqrt(
                 Math.pow(rightPosition.x - leftPosition.x, 2) +
-                Math.pow(rightPosition.y - leftPosition.y, 2));
+                        Math.pow(rightPosition.y - leftPosition.y, 2));
         float eyeRadius = EYE_RADIUS_PROPORTION * distance;
         float irisRadius = IRIS_RADIUS_PROPORTION * distance;
 
         // Advance the current left iris position, and draw left eye.
         PointF leftIrisPosition =
                 mLeftPhysics.nextIrisPosition(leftPosition, eyeRadius, irisRadius);
-        drawEye(canvas, leftPosition, eyeRadius, leftIrisPosition, irisRadius, mLeftOpen);
+        drawEye(canvas, leftPosition, eyeRadius, leftIrisPosition, irisRadius, mLeftOpen, mLeftOpenPaint);
 
         // Advance the current right iris position, and draw right eye.
         PointF rightIrisPosition =
                 mRightPhysics.nextIrisPosition(rightPosition, eyeRadius, irisRadius);
-        drawEye(canvas, rightPosition, eyeRadius, rightIrisPosition, irisRadius, mRightOpen);
+        drawEye(canvas, rightPosition, eyeRadius, rightIrisPosition, irisRadius, mRightOpen, mRightOpenPaint);
     }
 
     /**
      * Draws the eye, either closed or open with the iris in the current position.
      */
     private void drawEye(Canvas canvas, PointF eyePosition, float eyeRadius,
-                         PointF irisPosition, float irisRadius, boolean isOpen) {
+                         PointF irisPosition, float irisRadius, boolean isOpen, Paint eyeOpenPaint) {
         if (isOpen) {
-            canvas.drawCircle(eyePosition.x, eyePosition.y, eyeRadius, mEyeWhitesPaint);
+            canvas.drawCircle(eyePosition.x, eyePosition.y, eyeRadius, eyeOpenPaint);
             canvas.drawCircle(irisPosition.x, irisPosition.y, irisRadius, mEyeIrisPaint);
         } else {
             canvas.drawCircle(eyePosition.x, eyePosition.y, eyeRadius, mEyeLidPaint);
